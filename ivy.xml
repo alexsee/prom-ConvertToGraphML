@@ -1,0 +1,24 @@
+<ivy-module version="2.0">
+	 <info organisation="prom" module="GraphMLExporter" revision="latest">
+	 <description>
+	 Version VERSION
+	 </description>
+	 </info>
+	 <dependencies>
+	 	<dependency org="prom" name="ProM-Plugins" rev="latest" changing="true" transitive="true" />
+	
+		<dependency org="prom" name="HeuristicsMiner" rev="latest" changing="true"
+		transitive="true" />
+		 <dependency org="prom" name="BasicUtils" rev="latest" changing="true"
+		transitive="true" />
+		 <dependency org="prom" name="Log" rev="latest" changing="true"
+		transitive="true" />
+		 <dependency org="prom" name="OSService" rev="latest" changing="true"
+		transitive="true" />
+		 <dependency org="prom" name="Widgets" rev="latest" changing="true"
+		transitive="true" />
+		
+		<dependency org="org.jgrapht" name="jgrapht-core" rev="1.0.0" />
+
+	 </dependencies>
+</ivy-module>
