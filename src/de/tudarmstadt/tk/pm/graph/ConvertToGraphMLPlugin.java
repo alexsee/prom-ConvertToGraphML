@@ -15,9 +15,9 @@
 package de.tudarmstadt.tk.pm.graph;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -31,9 +31,9 @@ import org.processmining.models.heuristics.HeuristicsNetGraph;
 import org.processmining.models.heuristics.elements.HNEdge;
 import org.processmining.models.heuristics.elements.HNNode;
 
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
-import edu.uci.ics.jung.graph.Graph;
-import edu.uci.ics.jung.io.GraphMLWriter;
+import com.tinkerpop.blueprints.Vertex;
+import com.tinkerpop.blueprints.impls.tg.TinkerGraph;
+import com.tinkerpop.blueprints.util.io.graphml.GraphMLWriter;
 
 public class ConvertToGraphMLPlugin {
 
@@ -56,28 +56,34 @@ public class ConvertToGraphMLPlugin {
 
 		// convert heuristics net into graph
 		HeuristicsNetGraph heuristicGraph = new HeuristicsNetGraph(net, "", false);
-		Graph<HNNode, HNEdge<? extends HNNode, ? extends HNNode>> graph = new DirectedSparseGraph<>();
+		TinkerGraph graph = new TinkerGraph();
 
 		// convert nodes
+		Map<HNNode, Vertex> nodeToBlueVertex = new LinkedHashMap<>();
+		
 		for (HNNode node : heuristicGraph.getNodes()) {
-			graph.addVertex(node);
+			Vertex vertex = graph.addVertex(node.getId().toString());
+			nodeToBlueVertex.put(node, vertex);
+			
+			vertex.setProperty("activity", node.getAttributeMap().get("ProM_Vis_attr_label"));
 		}
+		
 		for (HNEdge<? extends HNNode, ? extends HNNode> edge : heuristicGraph.getEdges()) {
-			graph.addEdge(edge, edge.getSource(), edge.getTarget());
+			graph.addEdge(getId(edge), 
+					nodeToBlueVertex.get(edge.getSource()), 
+					nodeToBlueVertex.get(edge.getTarget()),
+					getId(edge));
 		}
 
 		// export graph
-		FileOutputStream fos = new FileOutputStream(outputFile);
-		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
-
-		GraphMLWriter<HNNode, HNEdge<? extends HNNode, ? extends HNNode>> exporter = new GraphMLWriter<>();
-		exporter.save(graph, outputStreamWriter);
-
-		outputStreamWriter.close();
-		fos.close();
+		GraphMLWriter writer = new GraphMLWriter(graph);
+		writer.setNormalize(true);
+		writer.outputGraph(outputFile.getAbsolutePath());
 
 		context.getProgress().setMaximum(100);
 
 	}
-
+	private static String getId(HNEdge<? extends HNNode, ? extends HNNode> edge) {
+		return edge.getSource().getId().toString() + "->" + edge.getTarget().getId().toString();
+	}
 }

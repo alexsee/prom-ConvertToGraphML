@@ -18,7 +18,9 @@
 		 <dependency org="prom" name="Widgets" rev="latest" changing="true"
 		transitive="true" />
 		
-		<dependency org="org.jgrapht" name="jgrapht-core" rev="1.0.0" />
+		<!-- <dependency org="org.jgrapht" name="jgrapht-core" rev="1.0.0" /> -->
+		
+		<dependency org="com.tinkerpop.blueprints" name="blueprints-core" rev="2.6.0" />
 
 	 </dependencies>
 </ivy-module>
